@@ -15,8 +15,44 @@ const MakingTest = () => {
     }
   ]);
 
+  // состояние для изображения теста (обложки)
+  const [testImg, setTestImg] = useState(null);
+  const [imgPrev, setImgPrev] = useState(null);
+
   // индекс текущего редактируемого вопроса
   const [currQuestionIdx, setCurrQuestionIdx] = useState(0);
+
+  // обработчик загрузки изображения для теста
+  const ImgUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // проверяем размер файла (максимум 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Файл слишком большой. Максимальный размер: 5MB');
+        return;
+      }
+
+      // проверяем тип файла
+      if (!file.type.startsWith('image/')) {
+        alert('Пожалуйста, выберите изображение');
+        return;
+      }
+
+      setTestImg(file);
+      // создаем предпросмотр
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImgPrev(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // обработчик удаления изображения теста
+  const RemoveImg = () => {
+    setTestImg(null);
+    setImgPrev(null);
+  };
 
   // функция для добавления нового вопроса
   const addQuestion = () => {
@@ -38,6 +74,7 @@ const MakingTest = () => {
 
   // функция для удаления вопроса
   const delQuestion = (questionId, e) => {
+    e.stopPropagation(); // предотвращаем всплытие события
 
     if (questions.length <= 1) {
       alert('В тесте должен быть хотя бы один вопрос');
@@ -209,16 +246,95 @@ const MakingTest = () => {
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               <h2 className="text-2xl font-bold text-violet-900 mb-6">Основная информация</h2>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
+                {/* Загрузка обложки теста */}
                 <div>
-                  <label className="block text-lg font-semibold text-violet-800 mb-2">
-                    Название теста *
+                  <label className="block text-lg font-semibold text-violet-800 mb-3">
+                    Обложка теста
+                    <span className="text-sm text-gray-500 font-normal ml-2">
+                      (будет отображаться на главной странице)
+                    </span>
                   </label>
-                  <input
-                    type="text"
-                    placeholder="Введите название теста..."
-                    className="w-full p-4 text-lg border-2 border-violet-200 rounded-xl focus:border-violet-500 focus:outline-none transition-all duration-200"
-                  />
+                  
+                  {imgPrev ? (
+                    <div className="space-y-4">
+                      <div className="relative">
+                        <img 
+                          src={imgPrev} 
+                          alt="Предпросмотр обложки" 
+                          className="w-full h-48 object-cover rounded-xl border-2 border-violet-200"
+                        />
+                        <button
+                          onClick={RemoveImg}
+                          className="absolute top-2 right-2 px-3 py-1 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition-all duration-200"
+                        >
+                          Удалить
+                        </button>
+                      </div>
+                      <p className="text-sm text-gray-500">
+                        Это изображение будет отображаться как обложка вашего теста на главной странице.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="border-2 border-dashed border-violet-300 rounded-xl p-6 text-center hover:border-violet-500 hover:bg-violet-50 transition-all duration-200">
+                        <div className="flex flex-col items-center justify-center gap-3">
+                          <div className="w-16 h-16 bg-violet-100 rounded-full flex items-center justify-center">
+                            <svg className="w-8 h-8 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-violet-700 font-medium">Загрузите обложку для теста</p>
+                            <p className="text-gray-500 text-sm mt-1">Рекомендуемый размер: 400x300px, не более 5MB</p>
+                          </div>
+                          <label className="cursor-pointer">
+                            <div className="px-5 py-2 bg-violet-600 text-white font-medium rounded-lg hover:bg-violet-700 transition-all duration-200">
+                              Выбрать изображение
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={ImgUpload}
+                              className="hidden"
+                            />
+                          </label>
+                          <p className="text-gray-400 text-xs">
+                            Поддерживаемые форматы: JPG, PNG, GIF, WebP
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-500">
+                        Если не загрузить изображение, будет использована стандартная обложка.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-lg font-semibold text-violet-800 mb-2">
+                      Название теста *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Введите название теста..."
+                      className="w-full p-4 text-lg border-2 border-violet-200 rounded-xl focus:border-violet-500 focus:outline-none transition-all duration-200"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-lg font-semibold text-violet-800 mb-2">
+                      Категория
+                    </label>
+                    <select className="w-full p-4 text-lg border-2 border-violet-200 rounded-xl focus:border-violet-500 focus:outline-none transition-all duration-200 bg-white">
+                      <option value="Общий">Общий</option>
+                      <option value="Математика">Математика</option>
+                      <option value="История">История</option>
+                      <option value="Развлечение">Развлечение</option>
+                      <option value="Другое">Другое</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div>
@@ -229,20 +345,6 @@ const MakingTest = () => {
                     placeholder="Опишите ваш тест..."
                     className="w-full p-4 text-lg border-2 border-violet-200 rounded-xl focus:border-violet-500 focus:outline-none transition-all duration-200 h-32"
                   />
-                </div>
-
-                {/* категории, потом поменяем */}
-                <div>
-                  <label className="block text-lg font-semibold text-violet-800 mb-2">
-                    Категория
-                  </label>
-                  <select className="w-full p-4 text-lg border-2 border-violet-200 rounded-xl focus:border-violet-500 focus:outline-none transition-all duration-200 bg-white">
-                    <option value="Общий">Общий</option>
-                    <option value="Математика">Математика</option>
-                    <option value="История">История</option>
-                    <option value="Развлечение">Развлечение</option>
-                    <option value="Другое">Другое</option>
-                  </select>
                 </div>
               </div>
             </div>
@@ -400,6 +502,33 @@ const MakingTest = () => {
               </div>
             </div>
 
+            {/* предпросмотр обложки */}
+            {imgPrev && (
+              <div className="bg-white rounded-2xl p-6 shadow-lg">
+                <h2 className="text-xl font-bold text-violet-900 mb-4">Предпросмотр обложки</h2>
+                <div className="space-y-4">
+                  <div className="bg-violet-50 rounded-xl p-4">
+                    <div className="text-center text-violet-700 font-medium mb-3">
+                      Так будет выглядеть ваш тест на главной странице:
+                    </div>
+                    <div className="bg-white border-2 border-violet-200 rounded-xl p-4 flex flex-col items-center shadow-sm">
+                      <div className="w-full h-32 mb-4 rounded-lg overflow-hidden">
+                        <img 
+                          src={imgPrev} 
+                          alt="Предпросмотр обложки" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <h3 className="font-bold text-violet-900 mb-1">Название теста</h3>
+                        <p className="text-gray-600 text-sm">Краткое описание</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* информация о тесте */}
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               <h2 className="text-xl font-bold text-violet-900 mb-4">Содержание теста</h2>
@@ -422,8 +551,10 @@ const MakingTest = () => {
               <div className="mt-6 pt-4 border-t border-gray-200">
                 <h3 className="font-bold text-violet-800 mb-2">Подсказки:</h3>
                 <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• Обложка теста будет отображаться на главной странице</li>
+                  <li>• Без обложки будет использоваться стандартное изображение</li>
                   <li>• В основной информации обязательно напишите название теста</li>
-                  <li>• В описании теста напиши краткое описание (необязательно)</li>
+                  <li>• В описании теста напишите краткое описание (необязательно)</li>
                   <li>• Выберите категорию при необходимости</li>
                   <li>• Обязательно напишите текст вопроса</li>
                   <li>• Отметьте верный ответ кнопкой "Отметить верным"</li>
