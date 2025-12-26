@@ -2,6 +2,112 @@ import { useState } from 'react';
 import './MakingTest.css';
 
 const MakingTest = () => {
+  // состояние для вопросов
+  const [questions, setQuestions] = useState([
+    {
+      id: 1,
+      text: '',
+      points: 1,
+      answers: [
+        { id: 1, text: '', isCorrect: true },
+        { id: 2, text: '', isCorrect: false }
+      ]
+    }
+  ]);
+
+  // индекс текущего редактируемого вопроса
+  const [currQuestionIdx, setCurrQuestionIdx] = useState(0);
+
+  // функция для добавления нового вопроса
+  const addQuestion = () => {
+    const newId = questions.length + 1;
+    const newQuestion = {
+      id: newId,
+      text: '',
+      points: 1,
+      answers: [
+        { id: 1, text: '', isCorrect: true },
+        { id: 2, text: '', isCorrect: false }
+      ]
+    };
+
+    setQuestions([...questions, newQuestion]);
+    // переходим к новому вопросу
+    setCurrQuestionIdx(questions.length);
+  };
+
+  // функция для добавления нового варианта ответа к текущему вопросу
+  const addAnswer = () => {
+    const currQuestion = questions[currQuestionIdx];
+    const newAnswerId = currQuestion.answers.length + 1;
+    const newAnswer = {
+      id: newAnswerId,
+      text: '',
+      isCorrect: false
+    };
+
+    const updQuestions = questions.map((question, index) => {
+      if (index === currQuestionIdx) {
+        return {
+          ...question,
+          answers: [...question.answers, newAnswer]
+        };
+      }
+      return question;
+    });
+
+    setQuestions(updQuestions);
+  };
+
+  // функция для удаления варианта ответа
+  const delAnswer = (answerId) => {
+    const currQuestion = questions[currQuestionIdx];
+
+    // нельзя удалить, если останется меньше 2 вариантов
+    if (currQuestion.answers.length <= 2) return;
+
+    const updAnswers = currQuestion.answers
+      .filter(answer => answer.id !== answerId)
+      .map((answer, index) => ({
+        ...answer,
+        id: index + 1
+      }));
+
+    const updQuestions = questions.map((question, index) => {
+      if (index === currQuestionIdx) {
+        return {
+          ...question,
+          answers: updAnswers
+        };
+      }
+      return question;
+    });
+
+    setQuestions(updQuestions);
+  };
+
+  // функция для переключения правильного ответа
+  const setCorrectAnswer = (answerId) => {
+    const updQuestions = questions.map((question, index) => {
+      if (index === currQuestionIdx) {
+        return {
+          ...question,
+          answers: question.answers.map(answer => ({
+            ...answer,
+            isCorrect: answer.id === answerId
+          }))
+        };
+      }
+      return question;
+    });
+
+    setQuestions(updQuestions);
+  };
+
+
+  // получаем текущий вопрос
+  const currQuestion = questions[currQuestionIdx];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-violet-100 p-4 md:p-6 font-mono">
       <div className="max-w-7xl mx-auto">
@@ -70,14 +176,15 @@ const MakingTest = () => {
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-violet-900">
-                  Вопрос 1
+                  Вопрос {currQuestionIdx + 1}
                 </h2>
                 <div className="flex items-center gap-3">
                   <span className="text-violet-700 font-medium">Баллов за вопрос:</span>
                   <input
                     type="number"
                     min="1"
-                    value="1"
+                    value={currQuestion.points}
+                    onChange={(e) => updateQuestionPoints(e.target.value)}
                     className="w-20 p-2 border-2 border-violet-200 rounded-lg text-center focus:border-violet-500 focus:outline-none"
                   />
                 </div>
@@ -88,6 +195,8 @@ const MakingTest = () => {
                   Текст вопроса *
                 </label>
                 <textarea
+                  value={currQuestion.text}
+                  onChange={(e) => updateQuestionText(e.target.value)}
                   placeholder="Введите текст вопроса..."
                   className="w-full p-4 text-lg border-2 border-violet-200 rounded-xl h-32 focus:border-violet-500 focus:outline-none transition-all duration-200"
                 />
@@ -98,49 +207,48 @@ const MakingTest = () => {
                   <label className="block text-lg font-semibold text-violet-800">
                     Варианты ответов *
                   </label>
-                  <button className="px-4 py-2 bg-violet-600 text-white font-medium rounded-lg hover:bg-violet-700 transition-all duration-200">
+                  <button
+                    onClick={addAnswer}
+                    className="px-4 py-2 bg-violet-600 text-white font-medium rounded-lg hover:bg-violet-700 transition-all duration-200"
+                  >
                     + Добавить вариант
                   </button>
                 </div>
 
                 <div className="space-y-4">
-                  {/* вариант ответа 1 */}
-                  <div className="relative">
-                    <div className="flex items-start gap-3">
-                      <button className="mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 whitespace-nowrap">
-                        ✓ Верный
-                      </button>
-                      <div className="flex-1">
-                        <input
-                          type="text"
-                          placeholder="Текст варианта 1..."
-                          className="w-full p-4 text-lg border-2 border-green-500 bg-green-50 rounded-xl focus:outline-none transition-all duration-200"
-                        />
+                  {currQuestion.answers.map((answer) => (
+                    <div key={answer.id} className="relative">
+                      <div className="flex items-start gap-3">
+                        <button
+                          onClick={() => setCorrectAnswer(answer.id)}
+                          className={`mt-3 px-4 py-2 rounded-lg transition-all duration-200 whitespace-nowrap ${answer.isCorrect
+                              ? 'bg-green-600 text-white hover:bg-green-700'
+                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            }`}
+                        >
+                          {answer.isCorrect ? '✓ Верный' : 'Отметить верным'}
+                        </button>
+                        <div className="flex-1">
+                          <input
+                            type="text"
+                            value={answer.text}
+                            onChange={(e) => updateAnswerText(answer.id, e.target.value)}
+                            placeholder={`Текст варианта ${answer.id}...`}
+                            className={`w-full p-4 text-lg border-2 rounded-xl focus:outline-none transition-all duration-200 ${answer.isCorrect
+                                ? 'border-green-500 bg-green-50'
+                                : 'border-violet-200 focus:border-violet-500'
+                              }`}
+                          />
+                        </div>
+                        <button
+                          onClick={() => delAnswer(answer.id)}
+                          className="mt-3 px-4 py-2 text-red-600 border-2 border-red-300 rounded-lg hover:bg-red-50 transition-all duration-200"
+                        >
+                          Удалить
+                        </button>
                       </div>
-                      <button className="mt-3 px-4 py-2 text-red-600 border-2 border-red-300 rounded-lg hover:bg-red-50 transition-all duration-200">
-                        Удалить
-                      </button>
                     </div>
-                  </div>
-
-                  {/* вариант ответа 2 */}
-                  <div className="relative">
-                    <div className="flex items-start gap-3">
-                      <button className="mt-3 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200 whitespace-nowrap">
-                        Отметить верным
-                      </button>
-                      <div className="flex-1">
-                        <input
-                          type="text"
-                          placeholder="Текст варианта 2..."
-                          className="w-full p-4 text-lg border-2 border-violet-200 rounded-xl focus:border-violet-500 focus:outline-none transition-all duration-200"
-                        />
-                      </div>
-                      <button className="mt-3 px-4 py-2 text-red-600 border-2 border-red-300 rounded-lg hover:bg-red-50 transition-all duration-200">
-                        Удалить
-                      </button>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
 
@@ -157,35 +265,94 @@ const MakingTest = () => {
             {/* панель навигации по вопросам */}
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-violet-900">Вопросы (1)</h2>
-                <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-violet-700 text-white font-medium rounded-xl hover:shadow-gray-400 hover:shadow-md transition-all duration-200">
+                <h2 className="text-xl font-bold text-violet-900">
+                  Вопросы ({questions.length})
+                </h2>
+                <button
+                  onClick={addQuestion}
+                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-violet-700 text-white font-medium rounded-xl hover:shadow-gray-400 hover:shadow-md transition-all duration-200"
+                >
                   + Добавить вопрос
                 </button>
               </div>
 
               <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
-                {/* Вопрос 1 */}
-                <div className="p-4 rounded-xl border-2 bg-violet-100 border-violet-500 transition-all duration-200 cursor-pointer">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-violet-600 text-white flex items-center justify-center">
-                        1
+                {questions.map((question, index) => (
+                  <div
+                    key={question.id}
+                    onClick={() => setCurrQuestionIdx(index)}
+                    className={`p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${currQuestionIdx === index
+                        ? 'bg-violet-100 border-violet-500'
+                        : 'bg-violet-50 border-violet-200 hover:bg-violet-100'
+                      }`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${currQuestionIdx === index
+                            ? 'bg-violet-600 text-white'
+                            : 'bg-violet-200 text-violet-800'
+                          }`}>
+                          {index + 1}
+                        </div>
+                        <span className="font-medium text-violet-800 truncate">
+                          {question.text || `Вопрос ${index + 1}`}
+                        </span>
                       </div>
-                      <span className="font-medium text-violet-800 truncate">
-                        Вопрос 1
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-violet-600">
+                          {question.points} балл{question.points === 1 ? '' : (question.points > 1 && question.points < 5) ? 'а' : 'ов'}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-violet-600">1 балл</span>
+                    <div className="mt-2 text-sm text-gray-600">
+                      {question.answers.filter(a => a.isCorrect).length} верный ответ
                     </div>
                   </div>
-                  <div className="mt-2 text-sm text-gray-600">
-                    1 верный ответ
-                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* информация о тесте */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg">
+              <h2 className="text-xl font-bold text-violet-900 mb-4">Содержание теста</h2>
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-3 bg-violet-50 rounded-lg">
+                  <span className="text-violet-700 font-medium">Всего вопросов:</span>
+                  <span className="text-2xl font-bold text-violet-900">{questions.length}</span>
                 </div>
+
+                <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                  <span className="text-green-700 font-medium">Всего баллов:</span>
+                  <span className="text-2xl font-bold text-green-900">
+                    {questions.reduce((sum, question) => sum + question.points, 0)}
+                  </span>
+                </div>
+
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <h3 className="font-bold text-violet-800 mb-2">Подсказки:</h3>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• В основной информации обязательно напишите название теста</li>
+                  <li>• В описании теста напиши краткое описание (необязательно)</li>
+                  <li>• Выберите категорию при необходимости</li>
+                  <li>• Обязательно напишите текст вопроса</li>
+                  <li>• Отметьте верный ответ кнопкой "Отметить верным"</li>
+                  <li>• В тесте должно быть минимум 2 варианта ответа на вопрос</li>
+                  <li>• Только один вариант ответа верный (это пока, возможны изменения)</li>
+                  <li>• Над статистикой теста есть кнопка "Добавить вопрос"</li>
+                </ul>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* кнопка сохранения теста */}
+        <div className="w-full max-w-6xl mt-12 mb-8">
+          <button className="w-full py-4 bg-gradient-to-r from-purple-600 to-violet-700 text-white text-xl font-bold border-2 border-violet-100 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-100">
+            Сохранить и опубликовать тест
+          </button>
         </div>
       </div>
     </div>
