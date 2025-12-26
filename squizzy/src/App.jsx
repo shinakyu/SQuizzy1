@@ -6,8 +6,8 @@ import MakingTest from './pages/MakingTest';
 function HomePage() {
   const navigate = useNavigate();
 
-  const goToCreateTest = () => {
-    navigate('/create-test');
+  const goToMakingTest = () => {
+    navigate('/making-test');
   };
 
   return (
@@ -36,7 +36,7 @@ function HomePage() {
       {/* кнопка создания теста */}
       <div className='w-full max-w-6xl mb-12'>
         <button 
-          onClick={goToCreateTest}
+          onClick={goToMakingTest}
           className='w-full py-6 bg-gradient-to-r from-purple-600 to-violet-700 text-white text-3xl font-bold border-2 border-violet-100 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-100'
         >
           СОЗДАТЬ ТЕСТ
@@ -86,7 +86,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/create-test" element={<MakingTest />} />
+        <Route path="/making-test" element={<MakingTest />} />
       </Routes>
     </Router>
   );
