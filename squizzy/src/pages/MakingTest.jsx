@@ -1,7 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Добавьте этот импорт
 import './MakingTest.css';
 
 const MakingTest = () => {
+  const navigate = useNavigate(); // Инициализируйте навигацию
+
   // состояние для вопросов
   const [questions, setQuestions] = useState([
     {
@@ -25,6 +28,18 @@ const MakingTest = () => {
 
   // индекс текущего редактируемого вопроса
   const [currQuestionIdx, setCurrQuestionIdx] = useState(0);
+
+  // Обработчик для кнопки "Отмена"
+  const Cancel = () => {
+    // Можно добавить подтверждение при наличии изменений
+    if (testTitle || testDescription || questions[0].text || testImg) {
+      const confirmCancel = window.confirm(
+        'У вас есть несохраненные изменения. Вы уверены, что хотите отменить создание теста?'
+      );
+      if (!confirmCancel) return;
+    }
+    navigate('/'); // Переход на главную страницу
+  };
 
   // обработчик изменения названия теста
   const TitleChange = (e) => {
@@ -250,7 +265,10 @@ const MakingTest = () => {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <button className="px-5 py-2.5 text-violet-700 font-bold border-2 border-violet-300 rounded-xl hover:bg-violet-400 hover:text-white hover:border-violet-500 transition-all duration-200">
+            <button 
+              onClick={Cancel}
+              className="px-5 py-2.5 text-violet-700 font-bold border-2 border-violet-300 rounded-xl hover:bg-violet-400 hover:text-white hover:border-violet-500 transition-all duration-200"
+            >
               Отмена
             </button>
             <button className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-violet-700 text-white font-bold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-200">

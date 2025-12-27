@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react
 import './App.css';
 import MakingTest from './pages/MakingTest';
 import UserPage from './pages/UserPage';
+import TestPage from './pages/TestPage';
+
 
 function HomePage() {
   const navigate = useNavigate();
@@ -11,8 +13,12 @@ function HomePage() {
     navigate('/making-test');
   };
 
-   const goToUserPage = () => {
+  const goToUserPage = () => {
     navigate('/user');
+  };
+
+  const goToTest = (testId) => {
+    navigate(`/test/${testId}`);
   };
 
   return (
@@ -64,6 +70,7 @@ function HomePage() {
           {Array.from({ length: 10 }).map((_, index) => (
             <div
               key={index}
+              onClick={() => goToTest(index + 1)}
               className='bg-white border-2 border-violet-300 rounded-2xl p-6 flex flex-col items-center shadow-lg hover:shadow-2xl hover:border-violet-500 hover:scale-[1.03] transition-all duration-300 group cursor-pointer'
             >
               {/* картинка */}
@@ -80,7 +87,7 @@ function HomePage() {
 
               {/* описание */}
               <p className='text-gray-600 text-center text-sm flex-grow'>
-                Краткое описание
+                Краткое описание #{index + 1}
               </p>
 
               {/* индикатор ссылки */}
@@ -102,6 +109,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/making-test" element={<MakingTest />} />
         <Route path="/user" element={<UserPage />} />
+        <Route path="/test/:id" element={<TestPage />} />
       </Routes>
     </Router>
   );

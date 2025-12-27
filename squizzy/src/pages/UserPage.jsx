@@ -28,7 +28,7 @@ function UserPage() {
         <div className='mb-5'>
           <Link 
             to="/" 
-            className='inline-flex items-center text-violet-700 hover:text-violet-900 font-medium'
+            className='inline-flex items-center px-4 py-2 text-violet-700 font-medium border-2 border-violet-300 rounded-xl hover:bg-violet-400 hover:text-white hover:border-violet-500 transition-all duration-200'
           >
             <span className='mr-2'>←</span> На главную
           </Link>
