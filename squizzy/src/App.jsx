@@ -4,7 +4,7 @@ import './App.css';
 import MakingTest from './pages/MakingTest';
 import UserPage from './pages/UserPage';
 import TestPage from './pages/TestPage';
-
+import Registration from './pages/Registration';
 
 function HomePage() {
   const navigate = useNavigate();
@@ -21,12 +21,18 @@ function HomePage() {
     navigate(`/test/${testId}`);
   };
 
+  const goToRegistration = () => {
+    navigate('/register');
+  };
+
   return (
     <div className='bg-violet-200 min-h-screen flex flex-col items-center p-4 font-mono relative'>
-      
+
       {/* кнопки Регистрации, Входа и Профиля в правом верхнем углу */}
       <div className="absolute top-4 right-4 flex gap-3">
-        <button className="px-6 py-2 text-violet-700 font-medium border-2 border-violet-400 rounded-xl hover:bg-violet-50 hover:border-violet-500 transition-all duration-200">
+        <button
+          onClick={goToRegistration}
+          className="px-6 py-2 text-violet-700 font-medium border-2 border-violet-400 rounded-xl hover:bg-violet-50 hover:border-violet-500 transition-all duration-200">
           Регистрация
         </button>
         <button className="px-6 py-2 bg-violet-600 text-white font-medium border-2 border-violet-700 rounded-xl hover:bg-violet-700 transition-all duration-200 shadow-md">
@@ -34,13 +40,13 @@ function HomePage() {
         </button>
 
         {/* кнопка перехода на страницу пользователя */}
-          <button 
-            onClick={goToUserPage}
+        <button
+          onClick={goToUserPage}
           className="px-6 py-2 text-violet-700 font-medium border-2 border-violet-400 rounded-xl hover:bg-violet-50 hover:border-violet-500 transition-all duration-200 flex items-center gap-2"
-          >
+        >
           Профиль
-          </button>
-        
+        </button>
+
       </div>
 
       {/* заголовок и описание */}
@@ -55,7 +61,7 @@ function HomePage() {
 
       {/* кнопка создания теста */}
       <div className='w-full max-w-6xl mb-12'>
-        <button 
+        <button
           onClick={goToMakingTest}
           className='w-full py-6 bg-gradient-to-r from-purple-600 to-violet-700 text-white text-3xl font-bold border-2 border-violet-100 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-100'
         >
@@ -110,6 +116,7 @@ function App() {
         <Route path="/making-test" element={<MakingTest />} />
         <Route path="/user" element={<UserPage />} />
         <Route path="/test/:id" element={<TestPage />} />
+        <Route path="/register" element={<Registration />} />
       </Routes>
     </Router>
   );
