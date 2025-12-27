@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Добавьте этот импорт
+import { useNavigate } from 'react-router-dom';
 import './MakingTest.css';
 
 const MakingTest = () => {
-  const navigate = useNavigate(); // Инициализируйте навигацию
+  const navigate = useNavigate();
 
   // состояние для вопросов
   const [questions, setQuestions] = useState([
@@ -29,16 +29,16 @@ const MakingTest = () => {
   // индекс текущего редактируемого вопроса
   const [currQuestionIdx, setCurrQuestionIdx] = useState(0);
 
-  // Обработчик для кнопки "Отмена"
+  // обработчик для кнопки "Отмена"
   const Cancel = () => {
-    // Можно добавить подтверждение при наличии изменений
+    // можно добавить подтверждение при наличии изменений
     if (testTitle || testDescription || questions[0].text || testImg) {
       const confirmCancel = window.confirm(
         'У вас есть несохраненные изменения. Вы уверены, что хотите отменить создание теста?'
       );
       if (!confirmCancel) return;
     }
-    navigate('/'); // Переход на главную страницу
+    navigate('/'); // переход на главную страницу
   };
 
   // обработчик изменения названия теста

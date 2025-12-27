@@ -5,6 +5,8 @@ import MakingTest from './pages/MakingTest';
 import UserPage from './pages/UserPage';
 import TestPage from './pages/TestPage';
 import Registration from './pages/Registration';
+import TestResult from './pages/TestResult';
+import Login from './pages/Login';
 
 function HomePage() {
   const navigate = useNavigate();
@@ -25,6 +27,15 @@ function HomePage() {
     navigate('/register');
   };
 
+  
+  const goTestResult = (testResultId) => {
+    navigate(`/test-result/${testResultId}`);
+  };
+
+    const goToLogin = () => {
+    navigate('/login');
+  };
+
   return (
     <div className='bg-violet-200 min-h-screen flex flex-col items-center p-4 font-mono relative'>
 
@@ -35,7 +46,9 @@ function HomePage() {
           className="px-6 py-2 text-violet-700 font-medium border-2 border-violet-400 rounded-xl hover:bg-violet-50 hover:border-violet-500 transition-all duration-200">
           Регистрация
         </button>
-        <button className="px-6 py-2 bg-violet-600 text-white font-medium border-2 border-violet-700 rounded-xl hover:bg-violet-700 transition-all duration-200 shadow-md">
+        <button 
+        onClick={goToLogin}
+        className="px-6 py-2 bg-violet-600 text-white font-medium border-2 border-violet-700 rounded-xl hover:bg-violet-700 transition-all duration-200 shadow-md">
           Вход
         </button>
 
@@ -117,6 +130,8 @@ function App() {
         <Route path="/user" element={<UserPage />} />
         <Route path="/test/:id" element={<TestPage />} />
         <Route path="/register" element={<Registration />} />
+         <Route path="/login" element={<Login />} />
+        <Route path="/test-result/:id" element={<TestResult />} />
       </Routes>
     </Router>
   );

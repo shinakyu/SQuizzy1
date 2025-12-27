@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import './MakingTest.css';
 
 const TestPage = () => {
   const { id } = useParams(); // получаем ID теста из URL

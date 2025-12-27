@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './MakingTest.css';
 
 function UserPage() {
-  // пока просто пример того как будет все выглядеть и что будет на стр юзера
+  const navigate = useNavigate(); // добавляем хук useNavigate для навигации
+  
   const [userData, setUserData] = useState({
     name: 'Иван Иванов',
     login: 'ivan_ivanov',
@@ -20,6 +21,16 @@ function UserPage() {
       { id: 6, title: 'Математика', score: '50%', date: '15-12-2025' },
     ]
   });
+
+  // функция для перехода к тесту (для созданных тестов)
+  const goToTest = (testId) => {
+    navigate(`/test/${testId}`); // Переход на страницу теста с передачей ID
+  };
+
+  // функция для перехода к результатам теста (для пройденных тестов)
+  const goToTestResult = (testId) => {
+    navigate(`/test-result/${testId}`); // Переход на страницу результата теста
+  };
 
   return (
     <div className='bg-violet-50 min-h-screen p-6 font-mono'>
@@ -39,7 +50,7 @@ function UserPage() {
           Профиль пользователя
         </h1>
 
-        {/* основная информация о пользователе, можно будет позже еще справа что-нибудь добавить*/}
+        {/* основная информация о пользователе */}
         <div className='bg-white rounded-2xl shadow-xl p-8 mb-6 border border-violet-200'>
           <div className='flex flex-col md:flex-row items-center md:items-start gap-8'>
             {/* аватар */}
@@ -68,7 +79,6 @@ function UserPage() {
                   </div>
                 </div>
                 
-                {/* пока нинаю чд с паролем, потом добавим возможность поменять вероятно */}
                 <div>
                   <label className='block text-sm text-violet-600 mb-1'>Пароль</label>
                   <div className='text-xl text-gray-700 font-mono'>
@@ -101,7 +111,10 @@ function UserPage() {
                   <div className='flex justify-between text-sm text-violet-600 mb-3'>
                     <span>Вопросов: {test.questions}</span>
                   </div>
-                  <button className='w-full py-2 bg-violet-500 text-white rounded-lg hover:bg-violet-600 transition-colors mt-auto'>
+                  <button 
+                    onClick={() => goToTest(test.id)} // Переход к странице теста
+                    className='w-full py-2 bg-violet-500 text-white rounded-lg hover:bg-violet-600 transition-colors mt-auto'
+                  >
                     Перейти к тесту
                   </button>
                 </div>
@@ -137,6 +150,7 @@ function UserPage() {
                     <th className='text-left py-3 px-4 text-violet-700'>Тест</th>
                     <th className='text-left py-3 px-4 text-violet-700'>Результат</th>
                     <th className='text-left py-3 px-4 text-violet-700'>Дата</th>
+                    <th className='text-left py-3 px-4 text-violet-700'>Действия</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -150,8 +164,17 @@ function UserPage() {
                       </td>
                       <td className='py-4 px-4 text-violet-600'>{test.date}</td>
                       <td className='py-4 px-4'>
-                        <button className='px-4 py-2 text-sm bg-violet-100 text-violet-700 rounded-lg hover:bg-violet-200'>
+                        <button 
+                          onClick={() => goToTestResult(test.id)} // переход к результатам теста
+                          className='px-4 py-2 text-sm bg-violet-100 text-violet-700 rounded-lg hover:bg-violet-200 mr-2'
+                        >
                           Посмотреть результат
+                        </button>
+                        <button 
+                          onClick={() => goToTest(test.id)} // можно повторно пройти тест
+                          className='px-4 py-2 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200'
+                        >
+                          Пройти еще раз
                         </button>
                       </td>
                     </tr>
